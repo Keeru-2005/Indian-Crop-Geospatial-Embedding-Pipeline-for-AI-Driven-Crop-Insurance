@@ -139,7 +139,9 @@ def get_patch_for_period(
         .select("elevation")
         .clip(roi)
     )
+    terrain = ee.Terrain.products(dem)
 
+    slope = terrain.select("slope")
     # --------------------------------------
     # NDVI
     # --------------------------------------
@@ -154,26 +156,75 @@ def get_patch_for_period(
     # --------------------------------------
     # STACK CHANNELS
     # --------------------------------------
-
+    era5 = (
+        ee.ImageCollection(
+            "ECMWF/ERA5_LAND/MONTHLY_AGGR"
+        )
+        .filterDate(
+            start_date,
+            end_date
+        )
+        .mean()
+        .clip(roi)
+    )
+    temperature = era5.select(
+        "temperature_2m"
+    )
+    precipitation = era5.select(
+        "total_precipitation_sum"
+    )
     stack = ee.Image.cat([
-        s2.select("B4"),
-        s2.select("B3"),
+
         s2.select("B2"),
+        s2.select("B3"),
+        s2.select("B4"),
+
+        s2.select("B5"),
+        s2.select("B6"),
+        s2.select("B7"),
+
         s2.select("B8"),
+        s2.select("B8A"),
+
+        s2.select("B11"),
+        s2.select("B12"),
+
         s1.select("VV"),
         s1.select("VH"),
-        dem,
-        ndvi
-    ]).double()
 
+        temperature,
+        precipitation,
+
+        dem,
+        slope,
+        ndvi
+
+    ]).double()
+    
     band_names = [
-        "B4",
-        "B3",
+
         "B2",
+        "B3",
+        "B4",
+
+        "B5",
+        "B6",
+        "B7",
+
         "B8",
+        "B8A",
+
+        "B11",
+        "B12",
+
         "VV",
         "VH",
+
+        "temperature_2m",
+        "total_precipitation_sum",
+
         "elevation",
+        "slope",
         "NDVI"
     ]
 
@@ -268,14 +319,29 @@ def generate_timeseries_tensor(
         "tensor": tensor_sequence,
         "timestamps": timestamps,
         "channels": [
-            "B4",
-            "B3",
-            "B2",
-            "B8",
-            "VV",
-            "VH",
-            "Elevation",
-            "NDVI"
+        "B2",
+        "B3",
+        "B4",
+
+        "B5",
+        "B6",
+        "B7",
+
+        "B8",
+        "B8A",
+
+        "B11",
+        "B12",
+
+        "VV",
+        "VH",
+
+        "temperature_2m",
+        "total_precipitation_sum",
+
+        "elevation",
+        "slope",
+        "NDVI"
         ]
     }
 
@@ -311,6 +377,7 @@ if __name__ == "__main__":
         "farm_timeseries.npy",
         tensor
     )
+    
 
     print("\nSaved file:")
     print("farm_timeseries.npy")
