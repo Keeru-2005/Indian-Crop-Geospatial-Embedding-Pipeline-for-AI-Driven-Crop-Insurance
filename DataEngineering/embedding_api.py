@@ -2,7 +2,7 @@ import numpy as np
 import gee_timeseries_pipeline
 import presto_encoder
 
-def get_farm_embeddings(lat, lon, start_date, end_date, start_month):
+def get_farm_embeddings(lat, lon, start_date, end_date, start_month, spatial_buffer=16):
     """
     Complete pipeline API to generate Presto embeddings for a given farm coordinate and time period.
     
@@ -13,12 +13,13 @@ def get_farm_embeddings(lat, lon, start_date, end_date, start_month):
         end_date (str): The end date for the GEE extraction in YYYY-MM-DD.
         start_month (int): The 0-indexed starting month value expected by Presto 
                            (e.g., June = 5, December = 11).
+        spatial_buffer (int): Window size around the center of the patch to average or crop.
                            
     Returns:
         np.ndarray: The generated Presto embeddings of shape (batch_size, embedding_dim).
     """
     print(f"\n--- API Request: Fetching Embeddings for Farm ({lat}, {lon}) ---")
-    print(f"Period: {start_date} to {end_date}")
+    print(f"Period: {start_date} to {end_date} | Spatial Buffer: {spatial_buffer}")
     
     # 1. Extract Time-Series Tensor from GEE
     print("\n[API] Step 1: Extracting GEE Data...")
@@ -26,7 +27,8 @@ def get_farm_embeddings(lat, lon, start_date, end_date, start_month):
         lat=lat, 
         lon=lon, 
         start_date=start_date, 
-        end_date=end_date
+        end_date=end_date,
+        spatial_buffer=spatial_buffer
     )
     tensor = gee_result["tensor"]
     
@@ -42,12 +44,13 @@ def get_farm_embeddings(lat, lon, start_date, end_date, start_month):
     return embeddings
 
 if __name__ == "__main__":
-    # Quick test of the API
+    # Quick test of the API using the pilot coordinates and June start date
     embeddings = get_farm_embeddings(
         lat=16.5062, 
         lon=80.6480, 
         start_date="2024-06-01", 
         end_date="2024-11-30", 
-        start_month=5
+        start_month=5,
+        spatial_buffer=16
     )
     print("API returned embeddings shape:", embeddings.shape)

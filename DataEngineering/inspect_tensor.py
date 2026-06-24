@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 file_path = "farm_timeseries.npy"
 
 if not os.path.exists(file_path):
+    file_path = "DataEngineering/farm_timeseries.npy"
+
+if not os.path.exists(file_path):
     raise FileNotFoundError(f"Missing data tracking asset: {file_path}. Please execute gee_timeseries_pipeline.py first.")
 
 # Input layout expected: (Timestamps, Height, Width, Channels)

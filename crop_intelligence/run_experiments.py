@@ -106,6 +106,11 @@ def run_crop_intelligence_suite():
     
     # Check fallback path (if ran from another directory)
     if not os.path.exists(kharif_file):
+        data_dir = "./DataEngineering"
+        kharif_file = os.path.join(data_dir, "farm_timeseries_kharif.npy")
+        rabi_file = os.path.join(data_dir, "farm_timeseries_rabi.npy")
+        
+    if not os.path.exists(kharif_file):
         data_dir = os.path.expanduser("~/PES/AgriTech/code/DataEngineering")
         kharif_file = os.path.join(data_dir, "farm_timeseries_kharif.npy")
         rabi_file = os.path.join(data_dir, "farm_timeseries_rabi.npy")
@@ -138,7 +143,7 @@ def run_crop_intelligence_suite():
         )
         claims_results.append(claim_2)
     else:
-        print("⚠️ GEE tensors not found. Run gee_timeseries_pipeline.py first to analyze real data.")
+        print("[Warning] GEE tensors not found. Run gee_timeseries_pipeline.py first to analyze real data.")
         print("Using simulated profiles for claim validation experiments.")
         
         # Simulated run for CLI feedback
