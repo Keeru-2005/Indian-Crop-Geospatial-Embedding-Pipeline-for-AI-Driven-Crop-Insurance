@@ -88,6 +88,13 @@ def run_temporal_experiments(data_dir="../DataEngineering"):
     torch.save(mamba_model.state_dict(), checkpoint_path)
     print(f"[Mamba Checkpointing] Saved trained Mamba weights to: {checkpoint_path}")
     
+    # Verify predict_crop_health works
+    from .mamba_model import predict_crop_health
+    print("\n[Mamba Verification] Verifying prediction wrapper interface...")
+    sample_seq = dataset_normal[0][0].numpy()
+    pred_res = predict_crop_health(sample_seq, weights_path=checkpoint_path)
+    print(f"  Sample Prediction: {pred_res['class_name']} (Confidence: {pred_res['confidence']:.2f})")
+    
     train_model(lstm_model, train_loader, epochs=8)
     train_model(trans_model, train_loader, epochs=8)
     

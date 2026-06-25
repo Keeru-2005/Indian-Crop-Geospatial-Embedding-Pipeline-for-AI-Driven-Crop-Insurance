@@ -1,4 +1,6 @@
 import math
+import os
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -185,9 +187,89 @@ class MambaClassifier(nn.Module):
         logits = self.classifier_head(season_embedding)
         return logits
 
+def predict_crop_health(tensor, weights_path=None):
+    """
+    Predicts crop health class, confidence score, and probability distribution for a given tensor.
+    
+    Args:
+        tensor (np.ndarray or torch.Tensor): Input tensor of shape (B, T, C) or (T, C), where C=17.
+        weights_path (str, optional): Path to the pre-trained mamba weights.
+                                      Defaults to 'mamba_paddy_pilot.pt' in the same directory.
+        
+    Returns:
+        dict: A dictionary containing:
+            - 'predicted_class': Int (0-3)
+            - 'class_name': Str ('Healthy Paddy', 'Stressed Paddy', 'Healthy Wheat', 'Stressed Wheat')
+            - 'confidence': Float (0.0 to 1.0)
+            - 'probabilities': np.ndarray of shape (4,) containing the mean probability distribution
+    """
+    if weights_path is None:
+        weights_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mamba_paddy_pilot.pt")
+        
+    if not os.path.exists(weights_path):
+        raise FileNotFoundError(f"Mamba weights file not found at {weights_path}. Please train the model first.")
+        
+    class_names = {
+        0: "Healthy Paddy",
+        1: "Stressed Paddy",
+        2: "Healthy Wheat",
+        3: "Stressed Wheat"
+    }
+    
+    # Initialize and load model
+    model = MambaClassifier(in_channels=17, embedding_dim=128, num_layers=2, d_state=16, num_classes=4)
+    model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu'), weights_only=True))
+    model.eval()
+    
+    # Preprocess tensor input
+    if isinstance(tensor, np.ndarray):
+        tensor = torch.tensor(tensor, dtype=torch.float32)
+        
+    # Handle single sample (T, C) vs batch (B, T, C)
+    if len(tensor.shape) == 2:
+        tensor = tensor.unsqueeze(0)
+        
+    with torch.no_grad():
+        logits = model(tensor)
+        probabilities = torch.softmax(logits, dim=-1)
+        # Average across the batch if batch size > 1 (e.g. spatial pixels)
+        mean_probs = torch.mean(probabilities, dim=0).cpu().numpy()
+        
+    predicted_class = int(np.argmax(mean_probs))
+    confidence = float(mean_probs[predicted_class])
+    
+    return {
+        "predicted_class": predicted_class,
+        "class_name": class_names.get(predicted_class, "Unknown"),
+        "confidence": confidence,
+        "probabilities": mean_probs
+    }
+
 if __name__ == "__main__":
     # Quick shape verification
     model = MambaClassifier(in_channels=17, embedding_dim=64, num_layers=1, num_classes=4)
     x = torch.randn(8, 6, 17)
     logits = model(x)
     print("Logits shape:", logits.shape)  # Should be (8, 4)
+
+    # Test the new predict_crop_health interface if weights exist
+    weights_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mamba_paddy_pilot.pt")
+    if os.path.exists(weights_path):
+        print("\nTesting predict_crop_health API with pre-trained weights:")
+        dummy_input = np.random.randn(6, 17).astype(np.float32)
+        result = predict_crop_health(dummy_input, weights_path=weights_path)
+        print("Single sequence input prediction:")
+        print("  Predicted Class ID:", result["predicted_class"])
+        print("  Predicted Class Name:", result["class_name"])
+        print("  Confidence Score:", result["confidence"])
+        print("  Probabilities:", result["probabilities"])
+        
+        # Test batch input
+        dummy_batch = np.random.randn(10, 6, 17).astype(np.float32)
+        batch_result = predict_crop_health(dummy_batch, weights_path=weights_path)
+        print("\nBatch input prediction (10 pixels):")
+        print("  Predicted Class Name:", batch_result["class_name"])
+        print("  Confidence Score:", batch_result["confidence"])
+    else:
+        print("\nWeights file 'mamba_paddy_pilot.pt' not found, skip predict_crop_health test.")
+

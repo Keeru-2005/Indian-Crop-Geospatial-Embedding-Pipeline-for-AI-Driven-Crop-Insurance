@@ -6,7 +6,7 @@ import torch
 from .growth_stage_engine import GrowthStageEngine
 from .biological_validation import BiologicalValidator
 from .crop_knowledge_db import CropKnowledgeDB
-from temporal_intelligence.mamba_model import MambaClassifier
+from temporal_intelligence.mamba_model import MambaClassifier, predict_crop_health
 from torch.utils.data import DataLoader
 
 class InsuranceClaimValidator:
@@ -30,7 +30,7 @@ class InsuranceClaimValidator:
         weights_path = os.path.join(dir_path, "temporal_intelligence", "mamba_paddy_pilot.pt")
         if os.path.exists(weights_path):
             try:
-                self.mamba_model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu')))
+                self.mamba_model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu'), weights_only=True))
                 print(f"[Mamba Integration] Loaded pre-trained model weights from: {weights_path}")
             except Exception as e:
                 print(f"[Mamba Integration] Failed to load model weights: {e}. Running fallback training.")
@@ -120,13 +120,13 @@ class InsuranceClaimValidator:
         flat_patch[flat_patch < -999.0] = 0.0
         flat_patch = np.nan_to_num(flat_patch, nan=0.0, posinf=0.0, neginf=0.0)
         
-        x_tensor = torch.tensor(flat_patch, dtype=torch.float32)
-        with torch.no_grad():
-            mamba_logits = self.mamba_model(x_tensor)
-            mamba_probs = torch.softmax(mamba_logits, dim=-1)
-            mean_probs = torch.mean(mamba_probs, dim=0).cpu().numpy()
-            predicted_class = int(np.argmax(mean_probs))
-            mamba_confidence = float(mean_probs[predicted_class])
+        # Call the clean inference wrapper
+        dir_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        weights_path = os.path.join(dir_path, "temporal_intelligence", "mamba_paddy_pilot.pt")
+        mamba_res = predict_crop_health(flat_patch, weights_path=weights_path)
+        predicted_class = mamba_res["predicted_class"]
+        mamba_confidence = mamba_res["confidence"]
+        mean_probs = mamba_res["probabilities"]
             
         class_names = {
             0: "Healthy Kharif (Paddy)",
