@@ -91,7 +91,9 @@ def validate_claim(claim: ClaimRequest):
         timestamps = SEASON_TIMESTAMPS[season]
 
         # Pick the correct pre-extracted satellite tensor
-        data_dir = os.path.join(PROJECT_ROOT, "DataEngineering")
+        data_dir = os.path.join(PROJECT_ROOT, "data")
+        if not os.path.exists(data_dir):
+            data_dir = os.path.join(PROJECT_ROOT, "data_engineering")
         tensor_file = os.path.join(data_dir, f"farm_timeseries_{season}.npy")
 
         # Fallback to the generic tensor if the seasonal one doesn't exist yet
@@ -103,7 +105,7 @@ def validate_claim(claim: ClaimRequest):
                 status_code=404,
                 detail=(
                     "Satellite tensor not found. "
-                    "Please run DataEngineering/gee_timeseries_pipeline.py first."
+                    "Please run data_engineering/gee_timeseries_pipeline.py first."
                 ),
             )
 

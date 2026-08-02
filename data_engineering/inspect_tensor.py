@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 # ==============================================================================
 # 1. LOAD DATASET TENSOR
 # ==============================================================================
-file_path = "farm_timeseries.npy"
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+file_path = os.path.join(base_dir, "data", "farm_timeseries.npy")
 
 if not os.path.exists(file_path):
-    file_path = "DataEngineering/farm_timeseries.npy"
+    file_path = os.path.join(base_dir, "data_engineering", "farm_timeseries.npy")
 
 if not os.path.exists(file_path):
     raise FileNotFoundError(f"Missing data tracking asset: {file_path}. Please execute gee_timeseries_pipeline.py first.")
@@ -99,7 +100,9 @@ fig.colorbar(im_radar, ax=axes[2], fraction=0.046, pad=0.04, label="Decibels (dB
 plt.tight_layout()
 
 # Save diagnostic visualization output file to project folder
-output_image_name = "data_verification_report.png"
+reports_fig_dir = os.path.join(base_dir, "reports", "figures")
+os.makedirs(reports_fig_dir, exist_ok=True)
+output_image_name = os.path.join(reports_fig_dir, "data_verification_report.png")
 plt.savefig(output_image_name, dpi=150, bbox_inches='tight')
 print(f"Pipeline verification file compiled and saved to disk: '{output_image_name}'")
 

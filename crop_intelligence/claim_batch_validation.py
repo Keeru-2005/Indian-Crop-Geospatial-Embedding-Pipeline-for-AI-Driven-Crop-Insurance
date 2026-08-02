@@ -14,16 +14,20 @@ def run_batch_validation():
     
     # Locate GEE output tensors
     dir_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    kharif_file = os.path.join(dir_path, "DataEngineering", "farm_timeseries_kharif.npy")
-    rabi_file = os.path.join(dir_path, "DataEngineering", "farm_timeseries_rabi.npy")
+    kharif_file = os.path.join(dir_path, "data", "farm_timeseries_kharif.npy")
+    rabi_file = os.path.join(dir_path, "data", "farm_timeseries_rabi.npy")
     
     # Double check fallback paths
     if not os.path.exists(kharif_file):
-        kharif_file = "./DataEngineering/farm_timeseries_kharif.npy"
-        rabi_file = "./DataEngineering/farm_timeseries_rabi.npy"
+        for candidate in ["../data", "./data", "../data_engineering", "./data_engineering", "../DataEngineering", "./DataEngineering"]:
+            k_path = os.path.join(dir_path, candidate, "farm_timeseries_kharif.npy")
+            if os.path.exists(k_path):
+                kharif_file = k_path
+                rabi_file = os.path.join(dir_path, candidate, "farm_timeseries_rabi.npy")
+                break
         
     if not os.path.exists(kharif_file):
-        print("[Error] Tensors not found. Please run the training script first to ensure data exists.")
+        print("[Error] Tensors not found. Please run the data extraction script first to ensure data exists.")
         return
 
     # 2. Collect 150 simulated real claim samples
