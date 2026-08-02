@@ -51,7 +51,7 @@ export default function Footer() {
               SYSTEM MODULES
             </div>
             {[
-              'DataEngineering/ — GEE Pipeline',
+              'data_engineering/ — GEE Pipeline',
               'crop_intelligence/ — Biophysical AI',
               'temporal_intelligence/ — Mamba SSM',
               'backend/ — FastAPI REST API',

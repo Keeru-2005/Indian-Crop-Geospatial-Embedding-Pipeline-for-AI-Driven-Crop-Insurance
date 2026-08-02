@@ -55,7 +55,7 @@ def evaluate_accuracy(model, data_loader):
             total += y.size(0)
     return correct / total
 
-def run_temporal_experiments(data_dir="../DataEngineering"):
+def run_temporal_experiments(data_dir="../data"):
     print("==============================================================================")
     print("        MAMBA EXPERIMENT RUNNER: RESILIENCE & INTERPRETABILITY ANALYSIS       ")
     print("==============================================================================")
@@ -81,7 +81,7 @@ def run_temporal_experiments(data_dir="../DataEngineering"):
     lstm_model = LSTMClassifier(in_channels=17, embedding_dim=d_model, num_layers=n_layers, num_classes=4)
     trans_model = TransformerClassifier(in_channels=17, embedding_dim=d_model, num_layers=n_layers, nhead=8, num_classes=4)
     
-    train_model(mamba_model, train_loader, epochs=8)
+    train_model(mamba_model, train_loader, epochs=30)
     
     # Save the trained Mamba model checkpoint
     checkpoint_path = os.path.join(os.path.dirname(__file__), "mamba_paddy_pilot.pt")
@@ -95,8 +95,8 @@ def run_temporal_experiments(data_dir="../DataEngineering"):
     pred_res = predict_crop_health(sample_seq, weights_path=checkpoint_path)
     print(f"  Sample Prediction: {pred_res['class_name']} (Confidence: {pred_res['confidence']:.2f})")
     
-    train_model(lstm_model, train_loader, epochs=8)
-    train_model(trans_model, train_loader, epochs=8)
+    train_model(lstm_model, train_loader, epochs=30)
+    train_model(trans_model, train_loader, epochs=30)
     
     # 2. RUN RESILIENCE STUDIES (MISSING TIMESTAMPS & CLOUD CONTAMINATION)
     print("\n[Phase 2] Evaluating resilience under degraded observation conditions...")
@@ -263,9 +263,11 @@ def run_temporal_experiments(data_dir="../DataEngineering"):
     plt.suptitle("Mamba SSM Research: Temporal Crop-Season Modeling and Observational Noise Resilience", fontweight='bold', fontsize=16)
     plt.tight_layout()
     
-    output_png = os.path.join(os.path.dirname(__file__), "mamba_experiment_results.png")
+    reports_fig_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "reports", "figures"))
+    os.makedirs(reports_fig_dir, exist_ok=True)
+    output_png = os.path.join(reports_fig_dir, "mamba_experiment_results.png")
     plt.savefig(output_png, dpi=300, bbox_inches='tight')
     print(f"\nSUCCESS: Experimental analysis completed. Saved charts to: '{output_png}'")
 
 if __name__ == "__main__":
-    run_temporal_experiments(data_dir="./DataEngineering")
+    run_temporal_experiments(data_dir="../data")

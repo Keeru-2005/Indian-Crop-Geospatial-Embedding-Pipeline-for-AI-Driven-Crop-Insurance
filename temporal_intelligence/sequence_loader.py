@@ -37,7 +37,7 @@ class TemporalSequenceDataset(Dataset):
     """
     def __init__(
         self,
-        data_dir="../DataEngineering",
+        data_dir="../data",
         missing_rate=0.0,
         cloud_contamination=False,
         cloud_rate=0.2,
@@ -55,11 +55,15 @@ class TemporalSequenceDataset(Dataset):
         kharif_file = os.path.join(data_dir, "farm_timeseries_kharif.npy")
         rabi_file = os.path.join(data_dir, "farm_timeseries_rabi.npy")
         
-        # Fallback if paths are wrong (when executing from child folders)
+        # Fallback if paths are wrong
         if not os.path.exists(kharif_file):
-            data_dir = "./DataEngineering"
-            kharif_file = os.path.join(data_dir, "farm_timeseries_kharif.npy")
-            rabi_file = os.path.join(data_dir, "farm_timeseries_rabi.npy")
+            for candidate in ["../data", "./data", "../data_engineering", "./data_engineering", "../DataEngineering", "./DataEngineering"]:
+                k_path = os.path.join(candidate, "farm_timeseries_kharif.npy")
+                if os.path.exists(k_path):
+                    data_dir = candidate
+                    kharif_file = k_path
+                    rabi_file = os.path.join(data_dir, "farm_timeseries_rabi.npy")
+                    break
             
         if not os.path.exists(kharif_file):
             raise FileNotFoundError(f"Geospatial crop tensors not found. Searched {kharif_file}.")
@@ -187,7 +191,8 @@ class TemporalSequenceDataset(Dataset):
 
 if __name__ == "__main__":
     # Test the loader
-    dataset = TemporalSequenceDataset(data_dir="./DataEngineering")
+    dataset = TemporalSequenceDataset(data_dir="../data")
     print(f"Dataset Size: {len(dataset)}")
     x, y = dataset[0]
     print(f"Sample X shape: {x.shape}, label: {y.item()}")
+

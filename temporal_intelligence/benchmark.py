@@ -119,7 +119,7 @@ def train_and_evaluate(model_name, model, train_loader, val_loader, epochs=10, l
         "class_f1s": class_f1s
     }
 
-def run_benchmarks(data_dir="../DataEngineering", batch_size=128, epochs=10):
+def run_benchmarks(data_dir="../data", batch_size=128, epochs=10):
     print("==============================================================================")
     print("            BENCHMARK SUITE: LSTM vs. TRANSFORMER vs. MAMBA                   ")
     print("==============================================================================")
@@ -244,4 +244,4 @@ def run_benchmarks(data_dir="../DataEngineering", batch_size=128, epochs=10):
     print(f"Benchmark comparative charts dashboard compiled and saved to disk: '{output_png}'\n")
 
 if __name__ == "__main__":
-    run_benchmarks(data_dir="./DataEngineering", epochs=10)
+    run_benchmarks(data_dir="../data", epochs=10)

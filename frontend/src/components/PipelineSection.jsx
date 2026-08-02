@@ -13,7 +13,7 @@ const STEPS = [
     icon: '🛰️',
     color: 'var(--green-400)',
     title: 'GEE Data Pull',
-    subtitle: 'DataEngineering Layer',
+    subtitle: 'data_engineering Layer',
     desc: 'Google Earth Engine pulls 6 months of Sentinel-1, Sentinel-2, and ERA5 data for the GPS location. Cloud gaps are filled via temporal interpolation.',
     detail: 'Output: (6 × 64×64 × 17) Tensor',
   },

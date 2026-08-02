@@ -127,7 +127,10 @@ def run_regional_experiments():
     plt.suptitle("Empirical Separability Analysis of Indian Regions inside Presto Feature Space (Kharif Season)", fontweight='bold', y=1.02)
     plt.tight_layout()
     
-    output_png = "indian_regional_separability_report.png"
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    reports_fig_dir = os.path.join(base_dir, "reports", "figures")
+    os.makedirs(reports_fig_dir, exist_ok=True)
+    output_png = os.path.join(reports_fig_dir, "indian_regional_separability_report.png")
     plt.savefig(output_png, dpi=300, bbox_inches='tight')
     print(f"\nSUCCESS: Analysis completed. Clean chart saved to disk: '{output_png}'")
 
