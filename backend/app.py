@@ -7,6 +7,7 @@ import sys
 import numpy as np
 from datetime import datetime
 from typing import Optional
+import uvicorn
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -134,3 +135,9 @@ def validate_claim(claim: ClaimRequest):
         raise
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+
+if __name__ == "__main__":
+    print("Starting AgriShield AI FastAPI Server on http://localhost:8000 ...")
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+
