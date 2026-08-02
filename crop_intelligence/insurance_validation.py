@@ -126,7 +126,9 @@ class InsuranceClaimValidator:
         
         # Call the clean inference wrapper
         dir_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        weights_path = os.path.join(dir_path, "temporal_intelligence", "mamba_paddy_pilot.pt")
+        weights_path = os.path.join(dir_path, "models", "mamba_paddy_pilot.pt")
+        if not os.path.exists(weights_path):
+            weights_path = os.path.join(dir_path, "temporal_intelligence", "mamba_paddy_pilot.pt")
         mamba_res = predict_crop_health(flat_patch, weights_path=weights_path)
         predicted_class = mamba_res["predicted_class"]
         mamba_confidence = mamba_res["confidence"]
