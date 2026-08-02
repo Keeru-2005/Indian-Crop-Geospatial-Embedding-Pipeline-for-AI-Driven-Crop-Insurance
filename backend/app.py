@@ -134,6 +134,8 @@ def validate_claim(claim: ClaimRequest):
     except HTTPException:
         raise
     except Exception as exc:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(exc))
 
 
