@@ -18,12 +18,6 @@
 \thanks{This work was supported in part by the Department of Computer Science and Engineering, PES University, Bengaluru, India.}
 }
 
-\author{\IEEEauthorblockN{A R Keerthana\textsuperscript{1}, Ananya Lakshmi\textsuperscript{2}, Amrutha P J\textsuperscript{3}}
-\IEEEauthorblockA{\textit{Department of Computer Science and Engineering, PES University}\\
-Bengaluru, Karnataka, India \\
-Email: keerthana@example.edu, ananya@example.edu, amrutha@example.edu}
-}
-
 \maketitle
 
 \begin{abstract}
@@ -35,9 +29,9 @@ Crop Insurance Validation, Geospatial Embeddings, Foundation Models, Mamba State
 \end{IEEEkeywords}
 
 \section{Introduction}
-Agricultural insurance is essential for stabilizing rural farming economies under increasing climate volatility. Government-subsidized schemes like India's Pradhan Mantri Fasal Bima Yojana (PMFBY) protect millions of smallholder farmers against yield losses caused by non-preventable natural risks \cite{b6}. Despite its scope, traditional claim settlement relies heavily on Crop-Cutting Experiments (CCEs), where local officials manually harvest and weigh sample plots. CCEs are labor-intensive, logistically slow, expensive, unscalable, and susceptible to spatial sampling bias and moral hazard \cite{b2}, \cite{b11}. Consequently, claim processing often takes several months, delaying financial relief until after the subsequent planting season has begun.
+Agricultural insurance is crucial in ensuring stability in rural farm economics amidst the ever-changing climatic conditions. Insurance products such as the Pradhan Mantri Fasal Bima Yojana (PMFBY) in India safeguard millions of smallholder farmers against any yield losses arising from natural risks that cannot be avoided \cite{b6}. Even though it is a wide-scale operation, the process of settling claims is largely based on Crop Cutting Experiments (CCEs) where government officials hand-pick samples and physically weigh them \cite{b2}, \cite{b11}. The process is very tedious, costly, and subject to both logistical delays and spatial bias as well as moral hazard, delaying financial relief until after the subsequent planting season has begun.
 
-Satellite remote sensing offers continuous, non-intrusive monitoring of agricultural fields at scale \cite{b11}, \cite{b20}. However, converting raw satellite time-series into reliable insurance claim decisions involves five major operational challenges:
+Satellite remote sensing provides constant, non-interfering observation of agricultural fields in large numbers \cite{b11}, \cite{b20}. Nevertheless, turning satellite time series data into viable insurance claim decision-making requires addressing five critical issues:
 
 \begin{enumerate}
 \item \textbf{Spatial Boundary Mixing:} Smallholder landholdings in developing regions are typically smaller than 2 hectares \cite{b18}. At 10-meter spatial resolutions (Sentinel-2), edge pixels mix signatures from adjacent fields, trees, field bunds, and rural infrastructure, contaminating vegetative signals \cite{b18}, \cite{b20}.
@@ -71,9 +65,9 @@ The primary contributions of this paper are:
 \section{Related Work}
 
 \subsection{Remote Sensing and AI in Agricultural Index Insurance}
-Remote sensing meta-reviews by Weiss et al. \cite{b20} and systematic deep learning surveys by Victor et al. \cite{b19} establish that satellite observations provide repeatable, field-level estimates of plant traits, land cover, and crop yield. In agricultural index-based insurance (IBI), Nguyen et al. \cite{b11} conducted a comprehensive PRISMA review mapping satellite-derived indices across global crop categories, highlighting basis risk reduction through combined satellite-weather monitoring. Murthy et al. \cite{b2} implemented a Big Earth Data solution utilizing a multi-indicator Crop Health Factor (CHF) to replace unreliable CCE yield estimates across 999 insurance units in India. Hiremath et al. \cite{b12} evaluated machine learning models across 1.4 million Finnish field parcels for parcel-scale crop loss identification, proving the feasibility of satellite-based loss detection while noting the necessity of higher resolution optical and SAR data. Sani et al. \cite{b18} analyzed spatial, temporal, and spectral resolution trade-offs in smallholder farming, underscoring the challenges posed by plot fragmentation.
+Meta-analyses on remote sensing by Weiss et al. \cite{b20} and systematic reviews on deep learning by Victor et al. \cite{b19} confirm the use of satellite observations for reliable estimation of traits of plants, land cover types and crop yields at a field level. In Index Based Insurance (IBI), a PRISMA literature review on satellite indices for all major crops around the world was performed by Nguyen et al. \cite{b11}, stressing the importance of basis risk mitigation through integration of both satellite and weather monitoring data. Murthy et al. \cite{b2} adopted the Big Earth Data approach and used multi-indicator Crop Health Factor (CHF) to substitute yield estimates from the controversial CCE model in 999 insurance zones in India. Hiremath et al. \cite{b12} assessed performance of various machine learning approaches applied to more than 1.4 million Finnish field parcels to detect crop losses per parcel, thus confirming the applicability of satellite loss detection but highlighting the need for higher resolution optical and SAR data. Sani et al. \cite{b18} analyzed spatial, temporal, and spectral resolution trade-offs in smallholder farming, underscoring the challenges posed by plot fragmentation.
 
-To enhance claim processing transparency, recent frameworks integrate AI with emerging software architectures. Osorio et al. \cite{b6} conceptualized the relationship between agricultural AI adoption and government-subsidized insurance for risk reduction. Li \cite{b8} explored AI-empowered green insurance systems for low-carbon agricultural development. Werulkar and Pande \cite{b7} and Singh et al. \cite{b9} proposed automated crop insurance platforms fusing satellite remote sensing, ensemble machine learning, and blockchain smart contracts to eliminate manual audit delays. Similarly, Abd Rabuh et al. \cite{b10} developed low-cost geoinformatic parametric insurance for smallholder farmers in Colombia using Sentinel-2, MODIS, and deep learning classifiers. For drought-prone smallholder maize, Masiza et al. \cite{b16} implemented an index-based system combining satellite rainfall with Crop Water Requirement (CWR) growth-stage modeling to automate payout estimation.
+For improving transparency in claim processing, recent frameworks have incorporated AI technologies into new software architectures. Osorio et al. \cite{b6} developed a conceptual framework for understanding the link between the use of AI and insurance by the government to mitigate risks in agriculture. The work of Li \cite{b8} focused on developing green insurance through AI that could help achieve low-carbon agriculture. Werulkar and Pande \cite{b7} and Singh et al. \cite{b9} presented automated crop insurance systems through the integration of satellite remote sensing, ensemble machine learning, and blockchain smart contracts that help get rid of manual auditing process. In a similar fashion, Abd Rabuh et al. \cite{b10} designed low-cost geoinformatics-based parametric insurance for smallholder farmers in Colombia through the integration of Sentinel-2, MODIS, and deep learning classifiers. For drought-prone smallholder maize, Masiza et al. \cite{b16} implemented an index-based system combining satellite rainfall with Crop Water Requirement (CWR) growth-stage modeling to automate payout estimation.
 
 \subsection{Geospatial Foundation Models and Pre-Training}
 Extracting invariant representations from multi-sensor satellite time series remains a key research priority. Tseng et al. \cite{b4} introduced \textit{Presto}, a lightweight (0.4M parameter) pre-trained transformer foundation model that ingests multi-sensor pixel time series (Sentinel-1, Sentinel-2, ERA5, NDVI, DEM) using structured masked autoencoding to generate robust 128-dimensional embeddings. Xu et al. \cite{b15} proposed \textit{STNet} with \textit{SITS-MoCo} self-supervised contrastive learning to learn representations invariant to spectral noise, temporal shift, and missing data in Sentinel-2 series. For spatial classification, Lata et al. \cite{b3} demonstrated that Vision Transformers (ViTs) outperform standard CNNs in distinguishing spectrally similar crops. For field-level anomaly detection, Wei et al. \cite{b14} fused satellite, drone, and ground sensors using CNNs and spatiotemporal graph convolutional networks (ST-GCNs), while Shikhar and Sobti \cite{b17} introduced label-free anomaly detection using masked image modeling on aerial agricultural imagery.
@@ -84,12 +78,14 @@ Satellite Image Time Series (SITS) processing traditionally relies on RNNs (LSTM
 \section{System Architecture and Methodology}
 The proposed decision support system comprises three modules: Spatial Data Ingestion, Agronomic Biophysical Validation, and Temporal Sequence Classification. The overall pipeline architecture is illustrated in Fig. 1.
 
-\begin{figure}[htbp]
+\begin{figure*}[htbp]
 \centering
-\fbox{\rect(0,0)(230,120)} % Conceptual box for compilation resilience
+\includegraphics[width=0.72\textwidth]{architecture_diagram.jpeg}
+\vspace{-4pt}
 \caption{End-to-end multi-modal crop insurance decision support architecture, incorporating GEE ingestion, spatial buffer cropping, Presto foundation embedding, Jensen biophysical stress evaluation, and Mamba SSM sequence classification.}
 \label{fig:architecture}
-\end{figure}
+\vspace{-6pt}
+\end{figure*}
 
 \subsection{Geospatial Ingestion and Spatial Resolution Layer}
 The ingestion engine queries Google Earth Engine (GEE) to retrieve co-registered pixel time-series for farm target coordinates \cite{b4}, \cite{b21}. The ingested channels comprise:
@@ -98,7 +94,17 @@ The ingestion engine queries Google Earth Engine (GEE) to retrieve co-registered
 \item \textbf{Sentinel-1 GRD \cite{b13}:} Interferometric Wide Swath, VV and VH polarizations in decibels ($\text{dB}$).
 \item \textbf{ERA5-Land Reanalysis \cite{b4}:} Daily 2m air temperature ($K$) and total precipitation ($m$).
 \item \textbf{Topography \& Vegetation:} NASADEM elevation, slope, and computed Sentinel-2 NDVI.
+
+To verify multi-sensor spatial co-registration and structural data integrity across all 17 ingested channels, \textbf{Fig. \ref{fig:data_verification}} illustrates an extracted $32\times32$ farm target patch, contrasting optical RGB reflectance against the calculated NDVI canopy vigor matrix and Sentinel-1 SAR radar backscatter.
 \end{enumerate}
+\begin{figure*}[htbp]
+\centering
+\includegraphics[width=0.68\textwidth]{data_verification_report.png}
+\vspace{-4pt}
+\caption{Multi-sensor spatial data integrity verification across the isolated $32\times32$ farm patch at Timestamp 0. (Left) Normalized True Color Composite [Bands B4, B3, B2]. (Center) Computed Vegetation Index (NDVI) scaling matrix highlighting active canopy vigor. (Right) Sentinel-1 Synthetic Aperture Radar VV backscatter ($\text{dB}$) capturing underlying soil and structural roughness independent of cloud cover.}
+\label{fig:data_verification}
+\vspace{-6pt}
+\end{figure*}
 
 To resolve boundary mixing on small plots ($<2$ ha) \cite{b18}, the ingestion pipeline extracts a raw spatial patch $\mathbf{X}_{\text{raw}} \in \mathbb{R}^{T \times H \times W \times C}$ ($64 \times 64$ pixels, $H=W=64$, 10m resolution) centered on farm coordinates, where $T$ is the temporal sequence length and $C = 17$ channels. A central crop operator isolates the inner $2w \times 2w$ farm core ($32 \times 32$ pixels, where half-width buffer $w=16$):
 \begin{equation}
@@ -173,12 +179,25 @@ where $h_t \in \mathbb{R}^{256 \times 16}$ represents the latent memory state. W
 \section{Experimental Evaluation and Results}
 
 \subsection{Regional and Seasonal Separability}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{indian_regional_separability_report.png}\\[-2pt]
+{\footnotesize (a) Macro-Regional Clustering}\\[3pt]
+\includegraphics[width=\columnwidth]{indian_season_separability_report.png}\\[-2pt]
+{\footnotesize (b) Seasonal Phenological Clustering}
+\vspace{-2pt}
+\caption{Dimensionality reduction of Presto embeddings demonstrating (a) geographic clustering and (b) seasonal phenological separation.}
+\label{fig:embedding_separability}
+\vspace{-10pt}
+\end{figure}
 To evaluate whether 128-dimensional Presto foundation embeddings capture geographical and cropping characteristics \cite{b4}, we extract multi-temporal embeddings across three major agricultural zones in India: Punjab (North), Maharashtra (West), and Andhra Pradesh (South). Table I summarizes regional characteristics.
 
 \begin{table}[htbp]
 \caption{Study Region Profiling}
 \label{tab:regions}
 \centering
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lccll}
 \toprule
 \textbf{Region} & \textbf{Lat} & \textbf{Lon} & \textbf{Primary Crops} & \textbf{Soil Class} \\
@@ -187,10 +206,11 @@ To evaluate whether 128-dimensional Presto foundation embeddings capture geograp
 \textbf{Maharashtra} & $19.75^{\circ}$N & $75.71^{\circ}$E & Cotton / Soybean & Black Vertisol \\
 \textbf{Andhra Pradesh} & $16.51^{\circ}$N & $80.65^{\circ}$E & Paddy / Sugarcane & Red Sandy / Clay \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
-Dimensionality reduction using Principal Component Analysis (PCA), t-SNE, and UMAP demonstrates clear spatial clustering across regions and seasons (Kharif vs. Rabi). PC1 and PC2 capture 64.2\% of embedding variance, confirming that Presto features preserve macro-regional soil and crop growth signatures \cite{b4}.
+As illustrated in \textbf{Fig. \ref{fig:embedding_separability}}, dimensionality reduction using Principal Component Analysis (PCA), t-SNE, and UMAP demonstrates clear spatial clustering across regions and seasons (Kharif vs. Rabi). PC1 and PC2 capture 64.2\% of embedding variance, confirming that Presto features preserve macro-regional soil and crop growth signatures \cite{b4}.
 
 \subsection{Mamba Noise Resilience Benchmarks}
 We benchmark the Mamba classifier against LSTM and Transformer baselines on a synthetic-augmented dataset of 8,192 temporal sequence samples (80\% train, 20\% validation). Models are trained on clean sequences and evaluated under degraded observation scenarios: missing timesteps (20\%, 40\%) and cloud contamination (25\%, 50\%). Table II summarizes accuracy performance.
@@ -199,6 +219,7 @@ We benchmark the Mamba classifier against LSTM and Transformer baselines on a sy
 \caption{Temporal Sequence Classification Accuracy Under Noise (\%)}
 \label{tab:resilience}
 \centering
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lccccc}
 \toprule
 \textbf{Model} & \textbf{Clean} & \textbf{20\% Miss} & \textbf{40\% Miss} & \textbf{25\% Cloud} & \textbf{50\% Cloud} \\
@@ -207,7 +228,8 @@ LSTM & 93.15\% & \textbf{85.33\%} & \textbf{77.75\%} & 93.15\% & 90.71\% \\
 Transformer & 93.15\% & 83.86\% & 78.48\% & 91.44\% & 88.26\% \\
 \textbf{Mamba (Ours)} & \textbf{93.40\%} & 82.64\% & 67.48\% & \textbf{92.91\%} & \textbf{92.42\%} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \textit{Analysis:} Under clean conditions, all architectures perform comparably ($\approx 93\%$ accuracy). Under 50\% cloud contamination, LSTM and Transformer accuracies decrease to 90.71\% and 88.26\% respectively. Mamba maintains 92.42\% accuracy, demonstrating resilience to cloud-induced noise \cite{b1}, \cite{b5}. Under missing date conditions, recurrent and attention baselines perform slightly better due to global sequence interpolation, reflecting trade-offs between step-wise scan gating and global temporal attention \cite{b3}, \cite{b15}.
@@ -222,6 +244,7 @@ We evaluate the decision support framework on a test suite of 150 simulated crop
 \caption{Batch Claims Validation Performance Metrics}
 \label{tab:claims_metrics}
 \centering
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lcl}
 \toprule
 \textbf{Metric} & \textbf{Value} & \textbf{Operational Interpretation} \\
@@ -234,7 +257,8 @@ Decision F1-Score & \textbf{72.73\%} & Harmonic mean of precision and recall \\
 Yield Loss MAE & \textbf{28.94\%} & Absolute yield loss estimation error \\
 Yield Loss RMSE & \textbf{36.66\%} & Root mean squared yield loss error \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \textit{Validation Interpretation:} The decision support system achieves 100\% payout recall, ensuring zero false rejections of valid drought-stressed claims. Payout precision (57.14\%) reflects a conservative audit design: when sensor signals are ambiguous or misreporting is detected, claims are routed to human claims adjusters for manual verification rather than automated denial \cite{b2}, \cite{b7}.
@@ -249,9 +273,6 @@ While Transformer models achieve high sequence classification performance on cle
 
 \section{Conclusion and Future Work}
 This paper presented an automated decision-support framework for crop insurance validation designed to handle spatial boundary mixing, cloud contamination, and moral hazard in smallholder agriculture. By integrating Sentinel SAR/optical imagery, ERA5 meteorological data, Presto foundation embeddings, a biophysical Jensen yield model, and a Mamba State Space Model, the framework achieves 92.42\% classification accuracy under 50\% cloud noise and 100\% recall on valid claim payouts. Future work includes extending the pipeline to complex multi-crop intercropping systems and integrating smart-contract execution for automated micro-payout disbursements \cite{b7}, \cite{b9}.
-
-\section*{Acknowledgment}
-The authors thank the Department of Computer Science and Engineering, PES University, for computing resources and research support.
 
 \begin{thebibliography}{21}
 \bibitem{b1} L. Fan, S. Chen, L. Xia, Y. Zha, Q. Zhou, and Q. Yan, ``BTSM-UNet: Bidirectional Temporal-Spatial vision Mamba-UNet for winter wheat classification based on Sentinel-2 imagery,'' \emph{Smart Agricultural Technology}, vol. 12, p. 101547, 2025.
