@@ -27,7 +27,9 @@ class InsuranceClaimValidator:
         
         # Load weights
         dir_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        weights_path = os.path.join(dir_path, "temporal_intelligence", "mamba_paddy_pilot.pt")
+        weights_path = os.path.join(dir_path, "models", "mamba_paddy_pilot.pt")
+        if not os.path.exists(weights_path):
+            weights_path = os.path.join(dir_path, "temporal_intelligence", "mamba_paddy_pilot.pt")
         if os.path.exists(weights_path):
             try:
                 self.mamba_model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu'), weights_only=True))
@@ -46,7 +48,9 @@ class InsuranceClaimValidator:
             import torch.optim as optim
             
             dir_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            data_dir = os.path.join(dir_path, "DataEngineering")
+            data_dir = os.path.join(dir_path, "data")
+            if not os.path.exists(data_dir):
+                data_dir = os.path.join(dir_path, "data_engineering")
             dataset = TemporalSequenceDataset(data_dir=data_dir)
             train_loader = DataLoader(dataset, batch_size=128, shuffle=True)
             
@@ -122,7 +126,9 @@ class InsuranceClaimValidator:
         
         # Call the clean inference wrapper
         dir_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        weights_path = os.path.join(dir_path, "temporal_intelligence", "mamba_paddy_pilot.pt")
+        weights_path = os.path.join(dir_path, "models", "mamba_paddy_pilot.pt")
+        if not os.path.exists(weights_path):
+            weights_path = os.path.join(dir_path, "temporal_intelligence", "mamba_paddy_pilot.pt")
         mamba_res = predict_crop_health(flat_patch, weights_path=weights_path)
         predicted_class = mamba_res["predicted_class"]
         mamba_confidence = mamba_res["confidence"]

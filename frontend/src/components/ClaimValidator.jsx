@@ -238,11 +238,11 @@ function ResultPanel({ result }) {
 // ── Main Validator component ─────────────────────────────────────────────────
 export default function ClaimValidator() {
   const [form, setForm] = useState({
-    farmer_name: '',
+    farmer_name: 'Raju Reddy',
     crop_type: 'Paddy',
     incident_date: '2024-09-15',
     cause_of_loss: 'Drought',
-    farm_area_ha: 2.0,
+    farm_area_ha: 2.5,
   })
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
@@ -256,60 +256,100 @@ export default function ClaimValidator() {
     setError(null)
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const runPayload = async (payload) => {
     setLoading(true)
     setResult(null)
     setError(null)
     try {
-      // Always send andhra_pradesh — that is the only region with saved tensors in the MVP
-      const payload = { ...form, region: 'andhra_pradesh' }
-      const { data } = await axios.post(`${API_URL}/validate-claim`, payload, { timeout: 120000 })
+      const fullPayload = { ...payload, region: 'andhra_pradesh' }
+      const { data } = await axios.post(`${API_URL}/validate-claim`, fullPayload, { timeout: 120000 })
       setResult(data)
     } catch (err) {
       const msg = err.response?.data?.detail ?? err.message
-      setError(`Backend error: ${msg}.\n\nMake sure the FastAPI server is running:\n  .venv\\Scripts\\python -m uvicorn backend.app:app --reload`)
+      setError(`Backend Error: ${msg}.\n\nEnsure FastAPI backend is running on http://localhost:8000 (run: python backend/app.py)`)
     } finally {
       setLoading(false)
     }
   }
 
-  return (
-    <section id="demo" className="section" style={{ background: 'rgba(15,31,53,0.4)' }}>
-      <div className="container">
-        <div className="section-label">🚀 Live Demo</div>
-        <h2 className="section-title">
-          <span className="highlight">Try the AI Claim Validator</span><br />
-          Live & In Real-Time
-        </h2>
-        <p className="section-subtitle" style={{ marginBottom: 16 }}>
-          Submit a simulated crop insurance claim. Our full AI pipeline —
-          biophysical validation + Mamba temporal classifier — runs on pre-loaded
-          Andhra Pradesh 2024 satellite tensors and returns a real decision report.
-        </p>
+  const handlePreset = (presetType) => {
+    let p = { farmer_name: 'Raju Reddy', crop_type: 'Paddy', incident_date: '2024-09-15', cause_of_loss: 'Drought', farm_area_ha: 2.5 }
+    if (presetType === 'misreport') {
+      p = { farmer_name: 'Sita Ramaiah', crop_type: 'Wheat', incident_date: '2024-08-10', cause_of_loss: 'Drought', farm_area_ha: 1.8 }
+    } else if (presetType === 'heat') {
+      p = { farmer_name: 'Venkat Rao', crop_type: 'Cotton', incident_date: '2024-10-05', cause_of_loss: 'Extreme Heat', farm_area_ha: 3.2 }
+    }
+    setForm(p)
+    runPayload(p)
+  }
 
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'flex-start',
-          gap: 10,
-          background: 'rgba(59,130,246,0.08)',
-          border: '1px solid rgba(59,130,246,0.2)',
-          borderRadius: 10,
-          padding: '12px 16px',
-          fontSize: 13,
-          color: 'var(--blue-400)',
-          marginBottom: 40,
-          maxWidth: 700,
-          lineHeight: 1.6,
-        }}>
-          <span style={{ flexShrink: 0, marginTop: 2 }}>ℹ️</span>
-          <span>
-            <strong>MVP Pilot Scope:</strong> This demo validates claims using pre-extracted satellite tensors
-            for <strong>Guntur / Nellore, Andhra Pradesh</strong> (16.5062°N, 80.6480°E, Kharif 2024).
-            Expanding to new GPS locations requires running{' '}
-            <code style={{ fontSize: 12, background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: 3 }}>gee_timeseries_pipeline.py</code>{' '}
-            for those coordinates to extract and save their satellite tensors first.
-          </span>
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    runPayload(form)
+  }
+
+  return (
+    <section id="demo" className="section" style={{ background: 'rgba(15,31,53,0.4)', paddingTop: 40 }}>
+      <div className="container">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
+          <div>
+            <div className="section-label">🚀 Interactive AI Claim Verification</div>
+            <h2 className="section-title" style={{ marginBottom: 4 }}>
+              Automated <span className="highlight">Insurance Claim Auditor</span>
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
+              Submit a farm claim to evaluate satellite NDVI, ERA5 weather stress, and Mamba SSM phenology in real-time.
+            </p>
+          </div>
+
+          {/* Quick Demo Preset Buttons */}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button
+              onClick={() => handlePreset('valid')}
+              style={{
+                background: 'rgba(34,197,94,0.1)',
+                border: '1px solid rgba(34,197,94,0.3)',
+                color: 'var(--green-400)',
+                padding: '8px 14px',
+                borderRadius: 8,
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              🌾 Valid Claim Preset
+            </button>
+            <button
+              onClick={() => handlePreset('misreport')}
+              style={{
+                background: 'rgba(239,68,68,0.1)',
+                border: '1px solid rgba(239,68,68,0.3)',
+                color: '#f87171',
+                padding: '8px 14px',
+                borderRadius: 8,
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              🚨 Fraud / Misreporting Preset
+            </button>
+            <button
+              onClick={() => handlePreset('heat')}
+              style={{
+                background: 'rgba(245,158,11,0.1)',
+                border: '1px solid rgba(245,158,11,0.3)',
+                color: 'var(--gold-400)',
+                padding: '8px 14px',
+                borderRadius: 8,
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              ⚠️ Weather Mismatch Preset
+            </button>
+          </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 28, alignItems: 'start' }}>

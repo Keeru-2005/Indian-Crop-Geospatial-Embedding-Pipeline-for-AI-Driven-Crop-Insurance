@@ -7,6 +7,7 @@ import sys
 import numpy as np
 from datetime import datetime
 from typing import Optional
+import uvicorn
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -91,7 +92,9 @@ def validate_claim(claim: ClaimRequest):
         timestamps = SEASON_TIMESTAMPS[season]
 
         # Pick the correct pre-extracted satellite tensor
-        data_dir = os.path.join(PROJECT_ROOT, "DataEngineering")
+        data_dir = os.path.join(PROJECT_ROOT, "data")
+        if not os.path.exists(data_dir):
+            data_dir = os.path.join(PROJECT_ROOT, "data_engineering")
         tensor_file = os.path.join(data_dir, f"farm_timeseries_{season}.npy")
 
         # Fallback to the generic tensor if the seasonal one doesn't exist yet
@@ -103,7 +106,7 @@ def validate_claim(claim: ClaimRequest):
                 status_code=404,
                 detail=(
                     "Satellite tensor not found. "
-                    "Please run DataEngineering/gee_timeseries_pipeline.py first."
+                    "Please run data_engineering/gee_timeseries_pipeline.py first."
                 ),
             )
 
@@ -131,4 +134,12 @@ def validate_claim(claim: ClaimRequest):
     except HTTPException:
         raise
     except Exception as exc:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(exc))
+
+
+if __name__ == "__main__":
+    print("Starting AgriShield AI FastAPI Server on http://localhost:8000 ...")
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+

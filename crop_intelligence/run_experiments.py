@@ -99,21 +99,21 @@ def run_crop_intelligence_suite():
     # --------------------------------------------------------------------------
     print("\n[Experiment 2] Running Claim Auditor on Real Geospatial Data Tensors...")
     
-    # Paths to the teammate's output tensors
-    data_dir = "../DataEngineering"
+    # Paths to output tensors
+    data_dir = "../data"
     kharif_file = os.path.join(data_dir, "farm_timeseries_kharif.npy")
     rabi_file = os.path.join(data_dir, "farm_timeseries_rabi.npy")
     
-    # Check fallback path (if ran from another directory)
+    # Check fallback paths
     if not os.path.exists(kharif_file):
-        data_dir = "./DataEngineering"
-        kharif_file = os.path.join(data_dir, "farm_timeseries_kharif.npy")
-        rabi_file = os.path.join(data_dir, "farm_timeseries_rabi.npy")
-        
-    if not os.path.exists(kharif_file):
-        data_dir = os.path.expanduser("~/PES/AgriTech/code/DataEngineering")
-        kharif_file = os.path.join(data_dir, "farm_timeseries_kharif.npy")
-        rabi_file = os.path.join(data_dir, "farm_timeseries_rabi.npy")
+        for candidate in ["./data", "../data_engineering", "./data_engineering", os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")]:
+            k_path = os.path.join(candidate, "farm_timeseries_kharif.npy")
+            if os.path.exists(k_path):
+                data_dir = candidate
+                kharif_file = k_path
+                rabi_file = os.path.join(data_dir, "farm_timeseries_rabi.npy")
+                break
+
         
     claims_results = []
     
@@ -275,7 +275,9 @@ def run_crop_intelligence_suite():
     plt.tight_layout()
     
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    output_png = os.path.join(root_dir, "crop_stress_validation_report.png")
+    reports_fig_dir = os.path.join(root_dir, "reports", "figures")
+    os.makedirs(reports_fig_dir, exist_ok=True)
+    output_png = os.path.join(reports_fig_dir, "crop_stress_validation_report.png")
     plt.savefig(output_png, dpi=300, bbox_inches='tight')
     print(f"\nSUCCESS: Visualization generated and saved to: '{output_png}'")
     

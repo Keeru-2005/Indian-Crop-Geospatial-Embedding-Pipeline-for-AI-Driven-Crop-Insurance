@@ -416,8 +416,12 @@ if __name__ == "__main__":
         patch_size=64,
         spatial_buffer=16
     )
-    np.save("DataEngineering/farm_timeseries_kharif.npy", kharif_result["tensor"])
-    np.save("DataEngineering/farm_timeseries.npy", kharif_result["tensor"]) # standard fallback
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    out_dir = os.path.join(base_dir, "data")
+    os.makedirs(out_dir, exist_ok=True)
+
+    np.save(os.path.join(out_dir, "farm_timeseries_kharif.npy"), kharif_result["tensor"])
+    np.save(os.path.join(out_dir, "farm_timeseries.npy"), kharif_result["tensor"]) # standard fallback
     
     print("\n--- Extracting Rabi Season (Dec 2024 - May 2025) ---")
     rabi_result = generate_timeseries_tensor(
@@ -428,11 +432,11 @@ if __name__ == "__main__":
         patch_size=64,
         spatial_buffer=16
     )
-    np.save("DataEngineering/farm_timeseries_rabi.npy", rabi_result["tensor"])
+    np.save(os.path.join(out_dir, "farm_timeseries_rabi.npy"), rabi_result["tensor"])
     
     print("\n=================================")
     print("PILOT EXTRACTION COMPLETE")
     print("=================================")
     print("Kharif Shape:", kharif_result["tensor"].shape)
     print("Rabi Shape:  ", rabi_result["tensor"].shape)
-    print("\nTensors saved to 'DataEngineering/farm_timeseries_kharif.npy' and 'rabi.npy'")
+    print(f"\nTensors saved to '{out_dir}/farm_timeseries_kharif.npy' and 'rabi.npy'")

@@ -117,7 +117,10 @@ def run_indian_season_experiments(lat=16.5062, lon=80.6480):
     plt.suptitle("Empirical Separability Analysis of Indian Crop Seasons inside Presto Feature Space", fontweight='bold', y=1.02)
     plt.tight_layout()
     
-    output_png = "indian_season_separability_report.png"
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    reports_fig_dir = os.path.join(base_dir, "reports", "figures")
+    os.makedirs(reports_fig_dir, exist_ok=True)
+    output_png = os.path.join(reports_fig_dir, "indian_season_separability_report.png")
     plt.savefig(output_png, dpi=300, bbox_inches='tight')
     print(f"\nSUCCESS: Analysis completed. Clean chart saved to disk: '{output_png}'")
 

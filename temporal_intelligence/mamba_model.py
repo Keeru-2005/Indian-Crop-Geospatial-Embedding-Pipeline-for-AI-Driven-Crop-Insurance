@@ -203,11 +203,23 @@ def predict_crop_health(tensor, weights_path=None):
             - 'confidence': Float (0.0 to 1.0)
             - 'probabilities': np.ndarray of shape (4,) containing the mean probability distribution
     """
-    if weights_path is None:
-        weights_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mamba_paddy_pilot.pt")
+    dir_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    candidates = [
+        weights_path,
+        os.path.join(dir_path, "models", "mamba_paddy_pilot.pt"),
+        os.path.join(dir_path, "temporal_intelligence", "mamba_paddy_pilot.pt"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "mamba_paddy_pilot.pt")
+    ]
+    resolved_path = None
+    for cand in candidates:
+        if cand and os.path.exists(cand):
+            resolved_path = cand
+            break
+            
+    if resolved_path is None:
+        raise FileNotFoundError(f"Mamba weights file not found at {weights_path or candidates[1]}. Please train the model first.")
         
-    if not os.path.exists(weights_path):
-        raise FileNotFoundError(f"Mamba weights file not found at {weights_path}. Please train the model first.")
+    weights_path = resolved_path
         
     class_names = {
         0: "Healthy Paddy",
