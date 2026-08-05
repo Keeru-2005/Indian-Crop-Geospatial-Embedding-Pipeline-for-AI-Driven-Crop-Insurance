@@ -16,7 +16,12 @@ if not os.path.exists(file_path):
 # Input layout expected: (Timestamps, Height, Width, Channels)
 tensor = np.load(file_path)
 
-CHANNELS = ["B4 (Red)", "B3 (Green)", "B2 (Blue)", "B8 (NIR)", "VV (Radar)", "VH (Radar)", "Elevation", "NDVI"]
+CHANNELS = [
+    "B2 (Blue)", "B3 (Green)", "B4 (Red)", "B5 (RedEdge1)", "B6 (RedEdge2)", "B7 (RedEdge3)",
+    "B8 (NIR)", "B8A (NIR-N)", "B11 (SWIR1)", "B12 (SWIR2)",
+    "VV (Radar)", "VH (Radar)", "Temperature", "Precipitation",
+    "Elevation", "Slope", "NDVI"
+]
 num_timestamps, height, width, num_channels = tensor.shape
 
 print("==============================================================================")
@@ -44,20 +49,20 @@ for idx, channel_name in enumerate(CHANNELS):
     
     # Run sanity validation thresholds
     if c_min == 0.0 and c_max == 0.0:
-        status = "❌ ALL ZEROS"
+        status = "[ALL ZEROS]"
         all_zeros_detected = True
     elif np.isnan(c_mean) or np.isinf(c_mean):
-        status = "❌ BAD VALUES"
+        status = "[BAD VALUES]"
     else:
-        status = "✅ VALID"
+        status = "[VALID]"
         
     print(f"{channel_name:<15} | {c_min:<10.2f} | {c_max:<10.2f} | {c_mean:<10.2f} | {status}")
 
 print("-" * 65)
 if all_zeros_detected:
-    print("⚠️ WARNING: Empty channel masks detected. Verify cloud-mask filters or server timeouts.")
+    print("[WARNING] Empty channel masks detected. Verify cloud-mask filters or server timeouts.")
 else:
-    print("🚀 SUCCESS: Matrix numbers are bounded and structurally valid for embedding learning.")
+    print("[SUCCESS] Matrix numbers are bounded and structurally valid for embedding learning.")
 print("==============================================================================\n")
 
 # ==============================================================================
@@ -68,8 +73,8 @@ print("Generating analytical inline layout visualization for Timestamp Index 0..
 fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
 # --- Panel A: True Color Composite (RGB) ---
-# Extract Red (B4), Green (B3), Blue (B2) channels
-rgb_raw = tensor[0, :, :, 0:3]
+# Extract Red (B4 = idx 2), Green (B3 = idx 1), Blue (B2 = idx 0) channels
+rgb_raw = np.stack([tensor[0, :, :, 2], tensor[0, :, :, 1], tensor[0, :, :, 0]], axis=-1)
 
 # Normalize 12-bit Sentinel-2 surface reflectance (0-3000 mapping scale) to standard float range [0, 1]
 rgb_normalized = np.clip(rgb_raw / 3000.0, 0.0, 1.0)
@@ -79,8 +84,8 @@ axes[0].set_title("True Color Composite (RGB)\n[Bands: B4, B3, B2]", fontsize=12
 axes[0].axis('off')
 
 # --- Panel B: NDVI Matrix (Vegetation Index) ---
-# Pull calculated NDVI sequence index from channel 7
-ndvi_matrix = tensor[0, :, :, 7]
+# Pull calculated NDVI sequence index from channel 16 (-1)
+ndvi_matrix = tensor[0, :, :, 16]
 
 im_ndvi = axes[1].imshow(ndvi_matrix, cmap='YlGn', vmin=-0.1, vmax=0.9)
 axes[1].set_title("Vegetation Index Matrix\n[Calculated NDVI]", fontsize=12, fontweight='bold')
@@ -88,8 +93,8 @@ axes[1].axis('off')
 fig.colorbar(im_ndvi, ax=axes[1], fraction=0.046, pad=0.04, label="NDVI Scaling Vector")
 
 # --- Panel C: Active Radar Backscatter Structure (VV Channel) ---
-# Pull Sentinel-1 Ground Range Detected backscatter from channel 4
-radar_matrix = tensor[0, :, :, 4]
+# Pull Sentinel-1 Ground Range Detected backscatter from channel 10
+radar_matrix = tensor[0, :, :, 10]
 
 im_radar = axes[2].imshow(radar_matrix, cmap='bone')
 axes[2].set_title("Synthetic Aperture Radar Backscatter\n[Band: Sentinel-1 VV]", fontsize=12, fontweight='bold')
@@ -104,4 +109,4 @@ plt.savefig(output_image_name, dpi=150, bbox_inches='tight')
 print(f"Pipeline verification file compiled and saved to disk: '{output_image_name}'")
 
 # Render map layout window if running in desktop interactive console
-plt.show()
+# plt.show()
